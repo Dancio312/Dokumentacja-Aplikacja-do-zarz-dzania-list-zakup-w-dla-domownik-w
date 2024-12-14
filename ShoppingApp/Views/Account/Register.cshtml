@@ -1,0 +1,22 @@
+﻿@model ShoppingApp.ViewModels.RegisterViewModel
+
+<h2>Rejestracja</h2>
+
+<form asp-action="Register" method="post">
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Role"></label>
+        <select asp-for="Role" class="form-control">
+            <option value="Parent">Rodzic</option>
+            <option value="Child">Dziecko</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Zarejestruj</button>
+</form>
