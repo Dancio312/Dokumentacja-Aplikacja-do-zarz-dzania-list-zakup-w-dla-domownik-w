@@ -13,7 +13,8 @@ namespace ShoppingApp.Models
 
         [Required]
         [Display(Name="Wartość produktu")]
-        [Range(0,100)]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        [Range(0.01, 100.99, ErrorMessage = "Wartość musi być w zakresie od 0,01 do 100,99.")]
         public decimal Value { get; set; }
     }
 }
