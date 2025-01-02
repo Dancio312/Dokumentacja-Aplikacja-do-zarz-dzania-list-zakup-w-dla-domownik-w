@@ -1,51 +1,36 @@
-﻿@model IEnumerable<dynamic>
+﻿[Authorize(Roles = "Parent")]
+public async Task<IActionResult>
+    GenerateFamilyList()
+    {
+    var familyShoppingList = await _context.ShoppingList
+    .Include(s => s.Product)
+    .GroupBy(s => s.Product.Name)
+    .Select(g => new
+    {
+    ProductName = g.Key,
+    TotalQuantity = g.Count(),
+    TotalValue = g.Sum(s => (double)s.Product.Value) // Konwersja na double
+    })
+    .ToListAsync();
 
-@{
-    ViewData["Title"] = "Zbiorcza lista zakupów";
-}
+    var totalValue = await _context.ShoppingList
+    .Include(s => s.Product)
+    .SumAsync(s => (double)s.Product.Value); // Konwersja na double
 
-<h2>Zbiorcza lista zakupów</h2>
+    var userShoppingLists = await _context.ShoppingList
+    .Include(s => s.Product)
+    .Include(s => s.User)
+    .GroupBy(s => s.User.UserName)
+    .Select(g => new
+    {
+    UserName = g.Key,
+    Items = g.Select(i => i.Product.Name).ToList(),
+    TotalUserValue = g.Sum(i => (double)i.Product.Value) // Konwersja na double
+    })
+    .ToListAsync();
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Produkt</th>
-            <th>Łączna ilość</th>
-            <th>Łączna wartość</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.ProductName</td>
-                <td>@item.TotalQuantity</td>
-                <td>@item.TotalValue</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    ViewBag.TotalValue = totalValue;
+    ViewBag.UserShoppingLists = userShoppingLists;
 
-<h4>Łączna wartość zakupów: @ViewBag.TotalValue</h4>
-
-<hr />
-
-<h3>Zakupy poszczególnych użytkowników</h3>
-@foreach (var userList in ViewBag.UserShoppingLists)
-{
-    <h4>@userList.UserName</h4>
-    <ul>
-        @foreach (var item in userList.Items)
-        {
-            <li>@item</li>
-        }
-    </ul>
-    <p><strong>Łączna wartość zakupów:</strong> @userList.TotalUserValue</p>
-    <hr />
-}
-
-<form asp-action="ClearShoppingLists" method="post">
-    <button type="submit" class="btn btn-danger">Usuń listy zakupów</button>
-</form>
-
-<a asp-action="Index" class="btn btn-secondary mt-3">Powrót do listy zakupów</a>
+    return View(familyShoppingList);
+    }

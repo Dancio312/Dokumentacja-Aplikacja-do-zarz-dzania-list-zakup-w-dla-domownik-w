@@ -4,6 +4,7 @@ using ShoppingApp.Data;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Ustawienie domyœlnej kultury
 var cultureInfo = new CultureInfo("pl-PL");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -12,7 +13,7 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Konfiguracja Identity z obs³ug¹ ról
