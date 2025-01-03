@@ -9,11 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 var cultureInfo = new CultureInfo("pl-PL");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Konfiguracja Identity z obs³ug¹ ról

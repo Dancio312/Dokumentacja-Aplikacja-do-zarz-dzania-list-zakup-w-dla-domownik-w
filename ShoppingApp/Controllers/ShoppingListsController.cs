@@ -86,23 +86,25 @@ namespace ShoppingApp.Controllers
             return View(shoppingList);
         }
 
-        // GET: ShoppingLists/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             string userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (id == null)
-            {
-                return NotFound();
-            }
 
             var shoppingList = await _context.ShoppingList
                 .Where(s => s.Id == id && s.UserID == userID)
                 .FirstOrDefaultAsync();
 
+            if (id == null)
+            {
+                ModelState.AddModelError("", "Błąd, dane o tym id nie są w bazie.");
+                return View(shoppingList);  // Zwróć widok z komunikatem
+            }
+
+
             if (shoppingList == null)
             {
-                return NotFound();
+                ModelState.AddModelError("", "Nie masz uprawnień do edytowania tej listy zakupów.");
+                return View(shoppingList);  // Zwróć widok z komunikatem
             }
             ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", shoppingList.ProductId);
             return View(shoppingList);
